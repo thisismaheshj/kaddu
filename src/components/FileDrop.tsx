@@ -27,7 +27,7 @@ function Thumb({ meta }: { meta: FileMeta }) {
   return <span className="file-thumb file-thumb-icon"><Icon size={18} /></span>;
 }
 
-export function FileDrop({ value = [], onChange, accept, hint, maxSizeMB = 200, label }: Props) {
+export function FileDrop({ value = [], onChange, accept, hint, maxSizeMB = 50, label }: Props) {
   const input = useRef<HTMLInputElement>(null);
   const [over, setOver] = useState(false);
   const [error, setError] = useState<string>();

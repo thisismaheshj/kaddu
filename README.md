@@ -19,8 +19,21 @@ npm run dev
 - **Conditional logic.** `showIf` hides irrelevant questions (e.g. website URL only when Website = Yes, ad metrics only when they have advertised before, one detail panel per selected service).
 - **"Other" options.** Set `other: true` on a select, chips, cards or radio field; picking Other reveals a text input.
 - **Persistence.** Answers autosave to `localStorage`; uploads are stored in IndexedDB, so a refresh loses nothing. "Start over" clears both.
-- **Submission.** A unique ID (`PM-YYYYMMDD-XXXX-XXXX`) is generated on submit. Set `VITE_SUBMIT_URL` (see `.env.example`) to send the profile and files to your backend; otherwise it is kept on the device, and the success screen lets the user download a JSON summary.
+- **Submission.** A unique ID (`PM-YYYYMMDD-XXXX-XXXX`) is generated on submit. Uploads go to the private Supabase bucket `intake-files` under `<submission ID>/<field>/`, and one row is added to the `intake_submissions` table. The browser's public key can only insert — it cannot read, list or change anything. Without Supabase settings, submissions stay in the browser.
 - **Safety.** No field asks for passwords, OTPs, card or banking details or API keys. Text inputs show a warning if something that looks like one is typed.
+
+## Where responses go
+
+Supabase project **BlocksFund** (`eviuvbkgmlriipwymtex`):
+
+- **Table** `public.intake_submissions` — one row per submission: `submission_id`, `submitted_at`, `brand_name`, `contact_name`, `email`, `phone`, `data` (every raw answer), `summary` (readable label/value pairs by section) and `files` (uploaded file paths).
+- **Storage** bucket `intake-files` (private, 50 MB per file) — one folder per submission ID.
+
+View them in the Supabase dashboard (Table Editor → `intake_submissions`, Storage → `intake-files`). Configuration is read from `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` — locally from `.env.local`, and in the deploy from the GitHub repository variables.
+
+## Deploy
+
+Every push to `main` builds and publishes to GitHub Pages: https://thisismaheshj.github.io/kaddu/
 
 ## Structure
 
