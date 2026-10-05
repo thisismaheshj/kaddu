@@ -29,7 +29,19 @@ Supabase project **BlocksFund** (`eviuvbkgmlriipwymtex`):
 - **Table** `public.intake_submissions` — one row per submission: `submission_id`, `submitted_at`, `brand_name`, `contact_name`, `email`, `phone`, `data` (every raw answer), `summary` (readable label/value pairs by section) and `files` (uploaded file paths).
 - **Storage** bucket `intake-files` (private, 50 MB per file) — one folder per submission ID.
 
-View them in the Supabase dashboard (Table Editor → `intake_submissions`, Storage → `intake-files`). Configuration is read from `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` — locally from `.env.local`, and in the deploy from the GitHub repository variables.
+**Admin page:** https://thisismaheshj.github.io/kaddu/admin/ — sign in to search, filter, read every answer, open uploaded files, set a status (New / In review / Done), add internal notes, export CSV or delete a submission.
+
+Access is granted per account in `public.intake_admins`. To add an admin:
+
+1. Supabase dashboard → Authentication → Users → **Add user** (email + password, auto-confirm).
+2. Link the account in the SQL editor:
+   ```sql
+   insert into public.intake_admins (email, user_id)
+   select lower(email), id from auth.users where email = 'person@example.com'
+   on conflict (email) do update set user_id = excluded.user_id;
+   ```
+
+Signed-in accounts that are not linked see nothing. You can also view raw data in the Supabase dashboard (Table Editor → `intake_submissions`, Storage → `intake-files`). Configuration is read from `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` — locally from `.env.local`, and in the deploy from the GitHub repository variables.
 
 ## Deploy
 
@@ -46,6 +58,7 @@ src/
   lib/files.ts         IndexedDB file storage
   lib/submit.ts        review summary, submission, JSON export
   components/          Field renderer, Combobox, FileDrop, Review, Success
+  admin/               submissions dashboard (admin/index.html → /admin/)
   App.tsx              layout, step navigation, progress
 ```
 
